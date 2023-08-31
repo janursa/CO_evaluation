@@ -4,14 +4,15 @@ import seaborn as sns
 import os
 import argparse
 
-from GRN.imports import BENCHMARK_CO_DIR, METRICS
-from GRN.utils import print_output
+from CO_evaluation.imports import BENCHMARK_CO_DIR, METRICS
+from CO_evaluation.utils import print_output
 
+title_relabel={'auc':'AUCROC', 'epr':'EPR'}
 def plot(scores_selected_metrics, metrices):
     os.makedirs(f"{SCORES_DIR}/figures", exist_ok=True)
     for i in metrices:
         scores = scores_selected_metrics[i]
-        plt.figure(figsize=[15, 6])
+        plt.figure(figsize=[7, 5])
 
         if i == "epr_tfsubset":
             sns.heatmap(scores, cmap="viridis", fmt=".3g", annot=True, vmin=0.5, vmax=2, cbar=False)
@@ -24,13 +25,13 @@ def plot(scores_selected_metrics, metrices):
             sns.heatmap(scores, cmap="viridis", fmt=".3g", annot=True, vmin=0.5, cbar=False)
 
         # titles = {"epr": "EPR", "auc": "AUROC"}
-        plt.title(i)
+        plt.title(title_relabel[i])
         plt.ylabel("scRNA-seq data")
-        plt.xlabel("GRN inference method")
-        plt.xticks(rotation=0)
-        plt.subplots_adjust(left=0.3, bottom=0.15)
+        # plt.xlabel("GRN inference method")
+        plt.xticks(rotation=45)
+        # plt.subplots_adjust(left=0.15, bottom=0.35)
         to_save = f"{SCORES_DIR}/figures/{i}.png"
-        plt.savefig(to_save, transparent=False)
+        plt.savefig(to_save, transparent=False, bbox_inches='tight')
         print_output(to_save, verbose)
         # plt.show()
 if __name__ == '__main__':

@@ -8,9 +8,9 @@ from tqdm import tqdm
 import os
 import numpy as np
 
-from GRN.imports import EXTERNAL_CO_BENCHMARK_DIR, BENCHMARK_CO_DIR, METRICS
-from GRN.utils.CO_benchmark import GRN_Evaluator, load_GRN_results_for_all_samples, method_rename_dict, sample_rename_dict, get_GT, ALL_TFS
-from GRN.utils import print_output, print_df_cols
+from CO_evaluation.imports import EXTERNAL_CO_BENCHMARK_DIR, BENCHMARK_CO_DIR, METRICS
+from CO_evaluation.utils.CO_benchmark import GRN_Evaluator, load_GRN_results_for_all_samples, method_rename_dict, sample_rename_dict, get_GT, ALL_TFS
+from CO_evaluation.utils import print_output, print_df_cols
 
 
 def run_stats(benchmarking_method) -> pd.DataFrame:

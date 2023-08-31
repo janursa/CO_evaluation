@@ -6,6 +6,7 @@ __pycache__/
 results/
 external/
 
+
 # Mac OSX
 .DS_STORE
 
@@ -131,3 +132,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+notebooks/data.zip

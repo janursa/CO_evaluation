@@ -7,14 +7,14 @@ import seaborn as sns
 import os, sys, shutil, importlib, glob
 from itertools import permutations
 from tqdm import tqdm
-from GRN.utils import print_output, print_df_cols
+from CO_evaluation.utils import print_output, print_df_cols
 import itertools
 import decoupler as dc
 
 from sklearn.metrics import roc_curve, auc, confusion_matrix, precision_recall_curve, f1_score
 from sklearn.metrics import average_precision_score
 
-from GRN.imports import EXPRESSION_BENCHMARK_CO_DIR, EXTERNAL_CO_BENCHMARK_DIR
+from CO_evaluation.imports import EXPRESSION_BENCHMARK_CO_DIR, EXTERNAL_CO_BENCHMARK_DIR
 
 
 try:
