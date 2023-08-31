@@ -14,7 +14,7 @@ import decoupler as dc
 from sklearn.metrics import roc_curve, auc, confusion_matrix, precision_recall_curve, f1_score
 from sklearn.metrics import average_precision_score
 
-from CO_evaluation.imports import EXPRESSION_BENCHMARK_CO_DIR, EXTERNAL_CO_BENCHMARK_DIR
+from CO_evaluation.imports import  EXTERNAL_CO_BENCHMARK_DIR
 
 
 try:
