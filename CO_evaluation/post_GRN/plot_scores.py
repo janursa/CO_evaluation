@@ -12,7 +12,7 @@ def plot(scores_selected_metrics, metrices):
     os.makedirs(f"{SCORES_DIR}/figures", exist_ok=True)
     for i in metrices:
         scores = scores_selected_metrics[i]
-        plt.figure(figsize=[7, 5])
+        plt.figure(figsize=[8, 5])
 
         if i == "epr_tfsubset":
             sns.heatmap(scores, cmap="viridis", fmt=".3g", annot=True, vmin=0.5, vmax=2, cbar=False)

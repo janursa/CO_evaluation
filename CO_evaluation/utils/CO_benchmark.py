@@ -243,8 +243,6 @@ class GRN_Evaluator:
             GT = GT[GT.tf.isin(tfs_left)]
             # 3 remove if targets from GT are not present in genes
             GT = GT[GT.target.isin(genes_used)]
-            # print(f'{len(GT)}, {len(all_combinations)}')
-            # aa
         n_all_combinations = len(all_combinations),
 
         all_combinations["key"] = all_combinations["regulatory_gene"] + "_" + all_combinations["target_gene"]
@@ -266,9 +264,12 @@ class GRN_Evaluator:
         self.ref_table = all_combinations
 
         # create a summary of stats
+        TFs_1 = set(all_combinations.regulatory_gene.unique())
+        TFs_2 = set(GT.tf.unique())
+        shared_TFs = TFs_1.intersection(TFs_2)
         if self.calculate_stats:
             self.benchmarking_stats = dict(
-                n_TFs_GT=len(GT.tf.unique()),
+                n_TFs_GT=len(shared_TFs),
                 n_genes_used=len(self.genes_used),
                 n_links=len(self.links),
                 n_GT=len(GT),

@@ -7,16 +7,17 @@ import argparse
 from CO_evaluation.imports import BENCHMARK_CO_DIR
 from CO_evaluation.utils import print_output
 
-def plot_only_ratioGT(df):
-    plt.figure(figsize=(12, 6))
-    plt.bar(df.index, df['ratio_GT'], color='skyblue')
+dict_names = {'M1':'(B) Alternative implementation', 'CO':'(A) Original implementaion'}
+def plot_GT_TFs_count(df):
+    plt.figure(figsize=(5, 4))
+    plt.bar(df.index, df['n_TFs_GT'], color='black')
     plt.xticks(rotation=45)
-    plt.ylabel('Ratio of positives (%)')
-    plt.title(benchmarking_method)
+    plt.ylabel('Number of TFs in the GT')
+    plt.title(dict_names[benchmarking_method])
     plt.tight_layout()
 
-    plt.savefig(PLOT_FILE, transparent=False)
-    print_output(PLOT_FILE, verbose)
+    plt.savefig(PLOT_FILE_2, transparent=False)
+    print_output(PLOT_FILE_2, verbose)
 def plot_both(df):
     # Set up the figure and axes
     plt.figure(figsize=(6, 4))
@@ -35,8 +36,8 @@ def plot_both(df):
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig(PLOT_FILE, transparent=False)
-    print_output(PLOT_FILE, verbose)
+    plt.savefig(PLOT_FILE_1, transparent=False)
+    print_output(PLOT_FILE_1, verbose)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -50,7 +51,8 @@ if __name__ == '__main__':
 
     STATS_DIR = f'{BENCHMARK_CO_DIR}/stats'
     STATS_FILE = f'{STATS_DIR}/stats_{benchmarking_method}.csv'
-    PLOT_FILE = f'{STATS_DIR}/plot_{benchmarking_method}.png'
+    PLOT_FILE_1 = f'{STATS_DIR}/plot_{benchmarking_method}.png'
+    PLOT_FILE_2 = f'{STATS_DIR}/plot_{benchmarking_method}_GT_TFs.png'
 
     stats = pd.read_csv(STATS_FILE, index_col=0)
     # print(stats)
@@ -61,3 +63,5 @@ if __name__ == '__main__':
 
 
     plot_both(stats)
+
+    plot_GT_TFs_count(stats)
