@@ -226,23 +226,23 @@ class GRN_Evaluator:
         GT = self.df_ground_truth
         np.random.seed(123)
         # 1. Make data frame for all possible connections
+        tissue_TFs = self.df_ground_truth.tf.unique()
         if self.benchmarking_method == 'CO':
-            # 1
-            all_combinations = pd.DataFrame(permutations(genes_used, 2),
-                                            columns=["regulatory_gene", "target_gene"])
-            # 2 Remove tfs from evaluation list if TF does not exist in ground truth data.
-            tfs_no_data = [i for i in self.all_TFs if i not in self.df_ground_truth.tf.unique()]
+            # step 1
+            all_combinations = pd.DataFrame(permutations(genes_used, 2), columns=["regulatory_gene", "target_gene"])
+            # step 2 
+            tfs_no_data = [i for i in self.all_TFs if i not in tissue_TFs]
             all_combinations = all_combinations[~all_combinations.regulatory_gene.isin(tfs_no_data)]
         else:
             # 1
-            unique_TFs = self.df_ground_truth.tf.unique()
-            tfs_left = np.intersect1d(genes_used, unique_TFs)
+            tfs_left = np.intersect1d(genes_used, tissue_TFs)
             all_combinations = pd.DataFrame(itertools.product(tfs_left, genes_used),
                                             columns=["regulatory_gene", "target_gene"])
             # 2 remove those TFs from the GT if not present in genes
             GT = GT[GT.tf.isin(tfs_left)]
             # 3 remove if targets from GT are not present in genes
             GT = GT[GT.target.isin(genes_used)]
+        
         n_all_combinations = len(all_combinations),
 
         all_combinations["key"] = all_combinations["regulatory_gene"] + "_" + all_combinations["target_gene"]
