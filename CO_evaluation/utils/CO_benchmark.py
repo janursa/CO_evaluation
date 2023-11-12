@@ -14,15 +14,6 @@ import decoupler as dc
 from sklearn.metrics import roc_curve, auc, confusion_matrix, precision_recall_curve, f1_score
 from sklearn.metrics import average_precision_score
 
-from CO_evaluation.imports import  EXTERNAL_CO_BENCHMARK_DIR
-
-
-try:
-    ALL_TFS = np.load(
-        f"{EXTERNAL_CO_BENCHMARK_DIR}/data/ground_truth_data/chip_atlas/TFs_in_gimmev5_mouse.npy", allow_pickle=True)
-
-except:
-    pass
 
 sample_rename_dict = \
         {'Heart-10X_P7_4': "Heart_0",
@@ -388,12 +379,14 @@ def load_GRN_results(benchmarking_method, sample_path, BASE_FOLDER=None, VERBOSE
     sample = sample_path.split("/")[-1]
     tissue = sample.split("-")[0]
 
-    df_ground_truth = pd.read_csv(f"{BASE_FOLDER}/data/ground_truth_data/chip_atlas/data/{tissue}/chip_GT_links.csv", index_col=0)
+    df_ground_truth = pd.read_csv(f"{BASE_FOLDER}/celloracle_grn_benchmark/data/ground_truth_data/chip_atlas/data/{tissue}/chip_GT_links.csv", index_col=0)
 
     grn_names = [d for d in os.listdir(sample_path) if os.path.isdir(os.path.join(sample_path, d))]
     # grn_names = ['celloracle_cluster_mouseAtacBaseGRN', 'SCENIC_10kb']
 
     scores: list[dict[str,float]] = []
+
+    ALL_TFS = np.load(f"{BASE_FOLDER}/celloracle_grn_benchmark/data/ground_truth_data/chip_atlas/TFs_in_gimmev5_mouse.npy", allow_pickle=True)
 
     os.makedirs(VERBOSE_FOLDER, exist_ok=True)
     for grn_name in tqdm(grn_names, desc=f'Different GRN methods {sample}'):
@@ -512,10 +505,10 @@ def base_GRN_to_linklist(df):
     li["key"] = li["tf"] + "_" + li["target"]
 
     return li
-def get_GT(tissue: str) -> pd.DataFrame:
+def get_GT(tissue: str, data_dir) -> pd.DataFrame:
     """
     get ground truth
 
     """
-    GT_csv_path = f"{EXTERNAL_CO_BENCHMARK_DIR}/data/ground_truth_data/chip_atlas/data/{tissue}/chip_GT_links.csv"
+    GT_csv_path = f"{data_dir}/celloracle_grn_benchmark/ground_truth_data/chip_atlas/data/{tissue}/chip_GT_links.csv"
     return pd.read_csv(GT_csv_path, index_col=0)

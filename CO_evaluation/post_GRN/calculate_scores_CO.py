@@ -8,9 +8,9 @@ from tqdm import tqdm
 import os
 import numpy as np
 
-from CO_evaluation.imports import EXTERNAL_CO_BENCHMARK_DIR, BENCHMARK_CO_DIR, METRICS
-from CO_evaluation.utils.CO_benchmark import GRN_Evaluator, load_GRN_results_for_all_samples, method_rename_dict, sample_rename_dict, get_GT, ALL_TFS
-from CO_evaluation.utils import print_output, print_df_cols
+from CO_evaluation.imports import BENCHMARK_CO_DIR, METRICS
+from CO_evaluation.utils.CO_benchmark import GRN_Evaluator, load_GRN_results_for_all_samples, method_rename_dict, sample_rename_dict, get_GT
+from CO_evaluation.utils import print_output
 
 
 def get_external_scores(benchmarking_method:str) -> dict[str, pd.DataFrame]:
@@ -19,15 +19,14 @@ def get_external_scores(benchmarking_method:str) -> dict[str, pd.DataFrame]:
     to_save = f"{SCORES_DIR}/grn_score_summary_22.parquet"
 
     scores_all = load_GRN_results_for_all_samples(benchmarking_method,
-                                                  f'{EXTERNAL_CO_BENCHMARK_DIR}/data/inference_results022/',
-                                                  tissue=None, BASE_FOLDER=EXTERNAL_CO_BENCHMARK_DIR,
+                                                  f'{data_dir}/celloracle_grn_benchmark/data/inference_results022/',
+                                                  tissue=None, BASE_FOLDER=data_dir,
                                                   VERBOSE_FOLDER=f'{SCORES_DIR}/verbose')
 
     scores_all.to_parquet(to_save)
     print_output(to_save, verbose)
 
-    # get the benchmark scores for the external methods
-    """Reads the summary of the scores obtained for all the external reported by CO"""
+    # Reads the summary of the scores obtained for all the external reported by CO
     scores_all = pd.read_parquet(f"{SCORES_DIR}/grn_score_summary_22.parquet")
     scores_all.method.unique()
     # Rename methods
@@ -51,7 +50,7 @@ def get_shuffled_scores(benchmarking_method) -> pd.DataFrame:
     if os.path.exists(file_shuffled_scores):
         scores = pd.read_csv(file_shuffled_scores, index_col=0)
         return scores
-    LINKS_DIR = f'{EXTERNAL_CO_BENCHMARK_DIR}/data/inference_results022/'
+    LINKS_DIR = f'{data_dir}/celloracle_grn_benchmark/data/inference_results022/'
     samples = [d for d in sorted(os.listdir(LINKS_DIR))]
 
     grn_name = 'celloracle_cluster_mouseAtacBaseGRN'
@@ -61,6 +60,7 @@ def get_shuffled_scores(benchmarking_method) -> pd.DataFrame:
         tissue = sample.split("-")[0]
 
         GT = get_GT(tissue)
+        print(GT)
         # get the links
         links = pd.read_csv(f'{LINKS_DIR}/{sample}/{grn_name}/link.csv', index_col=0)
         nonzero = pd.read_csv(f'{LINKS_DIR}/{sample}/{grn_name}/genes_nonzero.csv', index_col=0).x.values
@@ -69,7 +69,9 @@ def get_shuffled_scores(benchmarking_method) -> pd.DataFrame:
         links['coef_abs'] = np.random.rand(len(links))
         links['coef_mean'] = np.random.rand(len(links))
         links['-logp'] = np.random.rand(len(links))
-        # calculate the score
+        # calculate the score   
+        ALL_TFS = np.load(f"{data_dir}/celloracle_grn_benchmark/data/ground_truth_data/chip_atlas/TFs_in_gimmev5_mouse.npy", allow_pickle=True)
+
         scores[sample] = GRN_Evaluator(all_TFs=ALL_TFS,
                        df_ground_truth=GT,
                        links=links,
@@ -85,11 +87,15 @@ if __name__ == '__main__':
     parser.add_argument('--calculate-random', action='store_true', help='To recalculate the scores for the random links')
     parser.add_argument('--benchmark-method', type=str, default='CO', help='The method to calculate GRN benchmarking scores against Chip data')
     parser.add_argument('--verbose', action='store_true', help='To print the details the run details')
+    parser.add_argument('--data_dir', type=str, default='../external/', help='Path to external data')
+
 
     args = parser.parse_args()
     calculate_random = args.calculate_random
     verbose = args.verbose
     benchmarking_method = args.benchmark_method
+    data_dir = args.data_dir
+    print(data_dir)
 
     METHODS = ["CellOracle\nscATAC-atlas\nBase-GRN",
                "CellOracle\npromoter\nBase-GRN",
