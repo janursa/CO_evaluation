@@ -13,7 +13,7 @@ def plot_GT_TFs_count(df):
     plt.bar(df.index, df['n_TFs_GT'], color='black')
     plt.xticks(rotation=45)
     plt.ylabel('Number of TFs in the GT')
-    plt.title(dict_names[benchmarking_method])
+    # plt.title(dict_names[benchmarking_method])
     plt.tight_layout()
 
     plt.savefig(PLOT_FILE_2, transparent=False)

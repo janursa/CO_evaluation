@@ -22,7 +22,6 @@ def get_external_scores(benchmarking_method:str) -> dict[str, pd.DataFrame]:
                                                   f'{data_dir}/celloracle_grn_benchmark/data/inference_results022/',
                                                   tissue=None, BASE_FOLDER=data_dir,
                                                   VERBOSE_FOLDER=f'{SCORES_DIR}/verbose')
-
     scores_all.to_parquet(to_save)
     print_output(to_save, verbose)
 
@@ -47,9 +46,9 @@ def get_shuffled_scores(benchmarking_method) -> pd.DataFrame:
     Obtains the links inferred by CO using base GRN, shuffles the values, and calculate the benchmarking score
     '''
     file_shuffled_scores = f'{SCORES_DIR}/shuffled_scores.csv'
-    if os.path.exists(file_shuffled_scores):
-        scores = pd.read_csv(file_shuffled_scores, index_col=0)
-        return scores
+    # if os.path.exists(file_shuffled_scores):
+    #     scores = pd.read_csv(file_shuffled_scores, index_col=0)
+    #     return scores
     LINKS_DIR = f'{data_dir}/celloracle_grn_benchmark/data/inference_results022/'
     samples = [d for d in sorted(os.listdir(LINKS_DIR))]
 
@@ -59,8 +58,7 @@ def get_shuffled_scores(benchmarking_method) -> pd.DataFrame:
     for sample in tqdm(samples, desc=f'Different samples shuffled method'):
         tissue = sample.split("-")[0]
 
-        GT = get_GT(tissue)
-        print(GT)
+        GT = get_GT(tissue, data_dir)
         # get the links
         links = pd.read_csv(f'{LINKS_DIR}/{sample}/{grn_name}/link.csv', index_col=0)
         nonzero = pd.read_csv(f'{LINKS_DIR}/{sample}/{grn_name}/genes_nonzero.csv', index_col=0).x.values
@@ -84,18 +82,17 @@ def get_shuffled_scores(benchmarking_method) -> pd.DataFrame:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--calculate-random', action='store_true', help='To recalculate the scores for the random links')
+    parser.add_argument('--shuffle', action='store_true', help='To calculate the scores for shuffled values')
     parser.add_argument('--benchmark-method', type=str, default='CO', help='The method to calculate GRN benchmarking scores against Chip data')
     parser.add_argument('--verbose', action='store_true', help='To print the details the run details')
     parser.add_argument('--data_dir', type=str, default='../external/', help='Path to external data')
-
+    
 
     args = parser.parse_args()
-    calculate_random = args.calculate_random
+    shuffle = args.shuffle
     verbose = args.verbose
     benchmarking_method = args.benchmark_method
     data_dir = args.data_dir
-    print(data_dir)
 
     METHODS = ["CellOracle\nscATAC-atlas\nBase-GRN",
                "CellOracle\npromoter\nBase-GRN",
@@ -111,7 +108,7 @@ if __name__ == '__main__':
 
     scores_external = get_external_scores(benchmarking_method)
 
-    if calculate_random:
+    if shuffle:
         # calculate random scores
         shuffled_scores = get_shuffled_scores(benchmarking_method)
         # merge the local and external, and save them

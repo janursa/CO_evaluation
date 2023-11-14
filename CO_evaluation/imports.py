@@ -15,4 +15,4 @@ OUTPUT_DIR = f"{MAIN_DIR}/results"
 BENCHMARK_CO_DIR = f"{OUTPUT_DIR}/CO/benchmark"
 tissues = ["Liver", "Lung", "Heart", "Kidney", "Spleen"]
 
-METRICS: Final = ['auc', 'epr']
+METRICS: Final = ['auc', 'auc_random', 'epr', 'auc_pr', 'auc_pr_random', 'f1', 'f1_random']

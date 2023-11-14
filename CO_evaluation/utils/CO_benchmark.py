@@ -282,7 +282,11 @@ class GRN_Evaluator:
         # AUC-PR
         auc_pr = average_precision_score(y_true=self.ref_table.ground_truth,
                                          y_score=self.ref_table.inference_result)
+        baseline_precision = self.ref_table.ground_truth.sum()/len(self.ref_table)
+        # adjusted_aur_pr =  (auc_pr - baseline_precision)/(1-baseline_precision)
         self.score["auc_pr"] = auc_pr
+        # self.score["auc_pr_adj"] = adjusted_aur_pr
+
         auc_pr_random = average_precision_score(y_true=self.ref_table.ground_truth,
                                                 y_score=self.ref_table.randomized)
         self.score["auc_pr_random"] = auc_pr_random
@@ -391,11 +395,11 @@ def load_GRN_results(benchmarking_method, sample_path, BASE_FOLDER=None, VERBOSE
     os.makedirs(VERBOSE_FOLDER, exist_ok=True)
     for grn_name in tqdm(grn_names, desc=f'Different GRN methods {sample}'):
         file_to_save = f'{VERBOSE_FOLDER}/scores_{grn_name}.json'
-        if os.path.exists(file_to_save):
-            with open(file_to_save, 'r') as f:
-                score = json.load(f)
-            scores.append(score)
-            continue
+        # if os.path.exists(file_to_save):
+        #     with open(file_to_save, 'r') as f:
+        #         score = json.load(f)
+        #     scores.append(score)
+        #     continue
         path = os.path.join(sample_path, grn_name)
         ge = GRN_Evaluator(all_TFs=ALL_TFS,
                            df_ground_truth=df_ground_truth,
@@ -510,5 +514,5 @@ def get_GT(tissue: str, data_dir) -> pd.DataFrame:
     get ground truth
 
     """
-    GT_csv_path = f"{data_dir}/celloracle_grn_benchmark/ground_truth_data/chip_atlas/data/{tissue}/chip_GT_links.csv"
+    GT_csv_path = f"{data_dir}/celloracle_grn_benchmark/data/ground_truth_data/chip_atlas/data/{tissue}/chip_GT_links.csv"
     return pd.read_csv(GT_csv_path, index_col=0)
