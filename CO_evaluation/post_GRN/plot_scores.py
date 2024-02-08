@@ -19,13 +19,13 @@ def plot(scores_selected_metrics, metrices):
             sns.heatmap(scores, cmap="viridis", fmt=".3g", annot=True, vmin=0.5, vmax=2, cbar=False)
         elif i == "epr":
             sns.heatmap(scores, cmap="viridis", fmt=".0f",
-                        annot=True, vmin=0.5, vmax=1000, cbar=False)
+                        annot=True, vmin=0, vmax=1000, cbar=False)
         elif i == "auc_pr":
-            sns.heatmap(scores, cmap="viridis", fmt=".4g", annot=True, vmin=1, cbar=False)
+            sns.heatmap(scores, cmap="viridis", fmt=".4g", annot=True, vmin=.5, cbar=False)
         elif i == 'f1':
-            sns.heatmap(scores, cmap="viridis", fmt=".4g", annot=True, vmin=1, cbar=False)
+            sns.heatmap(scores, cmap="viridis", fmt=".4g", annot=True, vmin=.5, cbar=False)
         else:
-            sns.heatmap(scores, cmap="viridis", fmt=".3g", annot=True, vmin=1, cbar=False)
+            sns.heatmap(scores, cmap="viridis", fmt=".3g", annot=True, vmin=.5, cbar=False)
 
         plt.title(title_relabel[i])
         plt.ylabel("scRNA-seq data")
@@ -55,20 +55,22 @@ if __name__ == '__main__':
             continue
         df = pd.read_csv(f'{SCORES_DIR}/scores_all_{metric}.csv', index_col=0)
         if metric  in ['auc_pr', 'f1', 'auc']:
-        # if metric  in ['auc_pr']:
-            # get the random scores for aupr and f1 to normalize
-            baseline = pd.read_csv(f'{BENCHMARK_CO_DIR}/scores_M1/scores_all_{metric}_random.csv', index_col=0)
-            df = df/baseline
-            # print(df['shuffled'])
-        df = df.rename(columns={'shuffled':'CellOracle-shuffled'})
+            # get the random scores to normalize
+            # baseline = pd.read_csv(f'{BENCHMARK_CO_DIR}/scores_M1/scores_all_{metric}_random.csv', index_col=0)
+            # df = df/baseline
+            df = df
+        if False:
+            df = df.drop('shuffled',axis=1)
+        else:
+            df = df.rename(columns={'shuffled':'CellOracle-shuffled'})
         scores_all[metric] = df
         metrics_left.append(metric)
     plot(scores_all, metrics_left)
 
 
 
-# step 1
-all_combinations = pd.DataFrame(permutations(genes_used, 2), columns==["regulatory_gene", "target_gene"])
-# step 2 
-tfs_no_data = [i for i in all_TFs if i not in tissue_TFs]
-all_combinations = all_combinations[~all_combinations.regulatory_gene.isin(tfs_no_data)]
+# # step 1
+# all_combinations = pd.DataFrame(permutations(genes_used, 2), columns==["regulatory_gene", "target_gene"])
+# # step 2 
+# tfs_no_data = [i for i in all_TFs if i not in tissue_TFs]
+# all_combinations = all_combinations[~all_combinations.regulatory_gene.isin(tfs_no_data)]
